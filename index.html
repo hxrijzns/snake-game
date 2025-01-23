@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Snake Game</title>
+    <title>Rafly Game - Neon Snake</title>
     <style>
         body {
             margin: 0;
@@ -21,25 +21,25 @@
             padding: 20px;
             border-radius: 15px;
             background: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 0 30px rgba(0, 255, 150, 0.2);
-            display: none; /* Hidden by default */
-            z-index: 1; /* Lower than start screen */
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.2);
+            display: none;
+            z-index: 1;
         }
 
         #gameCanvas {
-            border: 2px solid #00ff96;
+            border: 2px solid #00a8ff;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+            box-shadow: 0 0 20px rgba(0, 168, 255, 0.3);
         }
 
         .score-board {
             position: absolute;
             top: 30px;
             right: 30px;
-            color: #00ff96;
+            color: #00a8ff;
             font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 255, 150, 0.5);
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
             background: rgba(0, 0, 0, 0.5);
             padding: 10px 20px;
             border-radius: 5px;
@@ -50,10 +50,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #ff0066;
+            color: #ff4444;
             font-size: 48px;
             font-weight: bold;
-            text-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
             text-align: center;
             display: none;
         }
@@ -62,7 +62,7 @@
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 20px;
-            background: #ff0066;
+            background: #ff4444;
             color: white;
             border: none;
             border-radius: 5px;
@@ -71,39 +71,52 @@
         }
 
         .restart-btn:hover {
-            background: #ff0077;
-            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            background: #ff5555;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
         }
 
         .start-screen {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: #00ff96;
-            z-index: 2; /* Ensure it's above other elements */
+            color: #00a8ff;
+            z-index: 3;
+            pointer-events: all;
         }
 
         .start-btn {
             padding: 15px 30px;
             font-size: 24px;
-            background: #00ff96;
+            background: #00a8ff;
             color: #1a1a1a;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+            box-shadow: 0 0 20px rgba(0, 168, 255, 0.3);
         }
 
         .start-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(0, 255, 150, 0.5);
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.5);
+        }
+
+        .branding {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #00a8ff;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+            z-index: 2;
         }
     </style>
 </head>
 <body>
+    <div class="branding">RAF LY GAME</div>
     <div class="start-screen">
         <button class="start-btn">Start Game</button>
     </div>
@@ -148,8 +161,9 @@
             gameLoop = setInterval(update, 100);
             gameOverScreen.style.display = 'none';
             startScreen.style.display = 'none';
-            gameContainer.style.display = 'block'; // Show game container
+            gameContainer.style.display = 'block';
             isGameStarted = true;
+            canvas.focus();
         }
 
         function generateFood() {
@@ -202,6 +216,7 @@
             ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Draw snake
             snake.forEach((segment, index) => {
                 const gradient = ctx.createRadialGradient(
                     segment.x * CELL_SIZE + CELL_SIZE/2,
@@ -213,12 +228,12 @@
                 );
                 
                 if (index === 0) {
-                    gradient.addColorStop(0, '#00ff96');
-                    gradient.addColorStop(1, '#00cc77');
+                    gradient.addColorStop(0, '#00a8ff');
+                    gradient.addColorStop(1, '#0077b6');
                 } else {
                     const intensity = 1 - (index / snake.length);
-                    gradient.addColorStop(0, `rgba(0, 255, 150, ${intensity})`);
-                    gradient.addColorStop(1, `rgba(0, 204, 119, ${intensity})`);
+                    gradient.addColorStop(0, `rgba(0, 168, 255, ${intensity})`);
+                    gradient.addColorStop(1, `rgba(0, 119, 182, ${intensity})`);
                 }
 
                 ctx.fillStyle = gradient;
@@ -233,7 +248,10 @@
                 ctx.fill();
             });
 
-            ctx.fillStyle = '#ff0066';
+            // Draw red dot target
+            ctx.fillStyle = '#ff4444';
+            ctx.shadowColor = '#ff4444';
+            ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(
                 food.x * CELL_SIZE + CELL_SIZE/2,
@@ -243,6 +261,7 @@
                 Math.PI * 2
             );
             ctx.fill();
+            ctx.shadowBlur = 0;
         }
 
         function createParticles(x, y) {
@@ -253,13 +272,12 @@
                 particle.style.top = y + 'px';
                 particle.style.width = '4px';
                 particle.style.height = '4px';
-                particle.style.background = '#00ff96';
+                particle.style.background = '#ff4444';
                 particle.style.borderRadius = '50%';
                 particle.style.pointerEvents = 'none';
                 particle.style.animation = `particle 0.6s ease-out`;
 
                 document.body.appendChild(particle);
-                
                 setTimeout(() => particle.remove(), 600);
             }
         }
